@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>준서의 영단어 퀴즈 📚</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pink:#ff6b9d;--purple:#7c3aed;--lp:#a78bfa}
+body{font-family:'Nunito','Noto Sans KR',sans-serif;background:linear-gradient(150deg,#fff9e6 0%,#fde8f5 50%,#e8f0ff 100%);min-height:100vh;padding-bottom:80px;-webkit-tap-highlight-color:transparent}
+
+/* HEADER */
+.hd{background:white;box-shadow:0 2px 20px rgba(0,0,0,.08);padding:14px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.ht{font-size:17px;font-weight:900;color:#1e1b4b}
+.hs{font-size:11px;color:#bbb;font-weight:700}
+.tabs{margin-left:auto;display:flex;gap:6px}
+.tbtn{border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:13px;padding:9px 16px;border-radius:30px;transition:all .2s}
+.tbtn.on{background:var(--pink);color:white;box-shadow:0 4px 12px rgba(255,107,157,.4)}
+.tbtn.off{background:#f3f4f6;color:#aaa}
+
+/* WRAP */
+.wrap{max-width:540px;margin:0 auto;padding:18px 16px}
+
+/* CARD */
+.card{background:white;border-radius:22px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,.07);margin-bottom:14px}
+.ct{font-size:15px;font-weight:900;color:#1e1b4b;margin-bottom:3px}
+.cs{font-size:12px;color:#bbb;font-weight:700;margin-bottom:14px}
+
+/* SCORE */
+.sr{display:flex;gap:8px;margin-bottom:16px;justify-content:center;flex-wrap:wrap}
+.pill{background:white;border-radius:14px;padding:8px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-weight:800;font-size:13px}
+.pill.v{color:var(--purple)}.pill.y{color:#f59e0b}
+.fire{background:#fde8f5;color:#ec4899;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:800;display:none}
+.bg{border:2px solid #e5e7eb;background:white;border-radius:14px;padding:8px 12px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer;color:#aaa}
+
+/* QUESTION */
+.qcard{background:white;border-radius:26px;padding:32px 24px;box-shadow:0 8px 32px rgba(0,0,0,.10);margin-bottom:16px;text-align:center}
+.mtag{display:inline-block;font-size:12px;font-weight:800;padding:5px 14px;border-radius:20px;margin-bottom:12px}
+.mtag.en{background:#ede9fe;color:var(--purple)}.mtag.ko{background:#fce7f3;color:#db2777}
+.qw{font-size:32px;font-weight:900;color:#1e1b4b;line-height:1.25;margin-bottom:6px;word-break:break-word}
+.qh{font-size:12px;color:#ccc;font-weight:700}
+
+/* CHOICES */
+.choices{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.cbtn{width:100%;border:3px solid #e5e7eb;background:white;border-radius:18px;padding:15px 18px;font-size:16px;font-family:inherit;font-weight:700;cursor:pointer;text-align:left;color:#333;display:flex;align-items:center;gap:12px;transition:border-color .15s,background .15s}
+.cbtn:active:not(:disabled){transform:scale(.98)}
+.cbtn:disabled{cursor:default}
+.cbtn.ok{background:#d1fae5!important;border-color:#10b981!important;color:#065f46!important}
+.cbtn.ng{background:#fee2e2!important;border-color:#ef4444!important;color:#991b1b!important}
+.cbtn.rev{background:#fffbeb!important;border-color:#f59e0b!important}
+.lb{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;background:#ede9fe;color:var(--purple)}
+
+/* FEEDBACK */
+.fb{text-align:center;padding:4px 0 8px}
+.fbt{font-size:22px;font-weight:800;color:#1e1b4b;margin-bottom:14px}
+
+/* BUTTONS */
+.bn{border:none;background:linear-gradient(135deg,var(--lp),var(--purple));color:white;border-radius:18px;padding:15px 40px;font-size:16px;font-family:inherit;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.35)}
+.ba{border:none;background:linear-gradient(135deg,var(--pink),#f43f5e);color:white;border-radius:12px;padding:12px 18px;font-size:14px;font-family:inherit;font-weight:800;cursor:pointer;white-space:nowrap}
+.bce{border:2px solid #e5e7eb;background:white;border-radius:12px;padding:12px 14px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;color:#aaa;display:none}
+
+/* PHOTO */
+.ubox{border:3px dashed #c4b5fd;background:#faf5ff;border-radius:18px;overflow:hidden;position:relative}
+.ubox label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 20px;cursor:pointer;font-family:inherit;color:var(--purple)}
+.ubox:active{background:#ede9fe}
+.uico{font-size:38px}
+.utit{font-size:16px;font-weight:900}
+.usub{font-size:12px;font-weight:700;color:var(--lp);text-align:center}
+
+.ov{display:none;position:absolute;inset:0;background:rgba(245,240,255,.92);border-radius:15px;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.ov.show{display:flex}
+.spin{width:36px;height:36px;border:4px solid #e0d0ff;border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite}
+.stxt{font-size:14px;font-weight:800;color:var(--purple)}
+
+/* EXTRACTED */
+.ep{margin-top:14px;animation:pop .3s ease}
+.ec{font-weight:900;color:var(--purple);font-size:14px;margin-bottom:8px}
+.el{max-height:200px;overflow-y:auto;margin-bottom:12px}
+.er{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:#f5f0ff;margin-bottom:6px;font-size:14px}
+.cr{display:flex;gap:8px;flex-wrap:wrap}
+.bcf{border:none;border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;font-weight:800;cursor:pointer;flex:1}
+.bcf.p{background:var(--purple);color:white}.bcf.k{background:var(--pink);color:white}
+.bcf.g{background:#f3f4f6;color:#888;width:100%;flex:none;margin-top:2px}
+.ebox{background:#fee2e2;color:#ef4444;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;margin-top:10px;display:none}
+.pi{width:100%;border-radius:12px;max-height:160px;object-fit:cover;margin-bottom:10px}
+
+/* INPUT */
+.ir{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.inp{border:2px solid #e5e7eb;border-radius:12px;padding:12px 14px;font-size:15px;font-family:inherit;font-weight:700;outline:none;flex:1;min-width:100px;transition:border .2s}
+.inp:focus{border-color:var(--lp)}
+
+/* WORDLIST */
+.wlh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sl{font-size:13px;font-weight:900;color:#bbb}
+.br{border:2px solid #fca5a5;background:#fff1f2;color:#ef4444;border-radius:12px;padding:8px 14px;font-size:13px;font-family:inherit;font-weight:800;cursor:pointer;display:none;align-items:center;gap:5px}
+.wr{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:white;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:2.5px solid transparent}
+.wr.ed{background:#f5f0ff;border-color:var(--lp)}
+.ib{border:none;background:none;cursor:pointer;font-size:16px;padding:5px 7px;border-radius:8px}
+.ib:active{background:#f0f0f0}
+
+/* EMPTY */
+.em{text-align:center;padding:60px 20px}
+.ei{font-size:56px;margin-bottom:14px}
+.et{font-size:16px;font-weight:800;color:#bbb;margin-bottom:22px;line-height:1.6}
+
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.mbg.show{display:flex}
+.modal{background:white;border-radius:28px 28px 0 0;padding:28px 24px 40px;width:100%;max-width:540px;box-shadow:0 -10px 60px rgba(0,0,0,.15);animation:slideup .3s ease}
+.mtt{font-size:18px;font-weight:900;color:#1e1b4b;margin-bottom:8px}
+.mds{font-size:14px;color:#888;font-weight:700;margin-bottom:24px;line-height:1.7}
+.mbs{display:flex;gap:10px}
+.mb{flex:1;border:none;border-radius:14px;padding:15px;font-family:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.mb.c{background:#f3f4f6;color:#888}.mb.d{background:#ef4444;color:white}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes pop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideup{0%{transform:translateY(100%)}100%{transform:translateY(0)}}
+.as{animation:shake .5s ease}.ab{animation:bounce .5s ease}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <span style="font-size:28px">📚</span>
+  <div><div class="ht">준서의 영단어 퀴즈</div><div class="hs" id="hSub">0개 단어</div></div>
+  <div class="tabs">
+    <button class="tbtn on" onclick="toTab('quiz')">🎯 퀴즈</button>
+    <button class="tbtn off" onclick="toTab('edit')">✏️ 단어장</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="tq" class="wrap">
+  <div id="qem" class="em">
+    <div class="ei">😅</div>
+    <div class="et">단어를 4개 이상 추가하면<br>퀴즈가 시작돼요!</div>
+    <button class="bn" onclick="toTab('edit')">✏️ 단어 추가하러 가기</button>
+  </div>
+  <div id="qmain" style="display:none">
+    <div class="sr">
+      <div class="pill v" id="pCnt">✅ 0/0</div>
+      <div class="pill y" id="pAcc">🎯 0%</div>
+      <div class="fire" id="fireB"></div>
+      <button class="bg" onclick="restartQuiz()">🔄 다시시작</button>
+    </div>
+    <div class="qcard" id="qCard">
+      <div class="mtag" id="mTag"></div>
+      <div class="qw" id="qWord"></div>
+      <div class="qh">뜻을 고르세요</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="fb" id="fb" style="display:none">
+      <div class="fbt" id="fbTxt"></div>
+      <button class="bn" onclick="nextQ()">다음 문제 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT -->
+<div id="te" class="wrap" style="display:none">
+  <div class="card">
+    <div class="ct">📷 사진으로 자동 추출</div>
+    <div class="cs">단어장 사진을 올리면 AI가 단어를 읽어드려요</div>
+    <div class="ubox">
+      <label>
+        <div class="uico">📸</div>
+        <div class="utit">사진 선택하기</div>
+        <div class="usub">갤러리에서 선택 또는 카메라로 찍기</div>
+        <input type="file" accept="image/*" id="fi" style="display:none" onchange="handleFile(this.files[0])">
+      </label>
+      <div class="ov" id="ov">
+        <div class="spin"></div>
+        <div class="stxt">AI가 단어를 분석 중이에요...</div>
+      </div>
+    </div>
+    <div class="ebox" id="photoErr"></div>
+    <div class="ep" id="extPanel" style="display:none">
+      <img class="pi" id="prevImg" src="" alt="">
+      <div class="ec" id="extCnt"></div>
+      <div class="el" id="extList"></div>
+      <div class="cr">
+        <button class="bcf p" onclick="confirmExt(false)">➕ 기존에 추가</button>
+        <button class="bcf k" onclick="confirmExt(true)">🔄 전체 교체</button>
+        <button class="bcf g" onclick="cancelExt()">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct" id="inpTit">➕ 직접 추가</div>
+    <div class="ir">
+      <input class="inp" id="inpEn" placeholder="English" onkeydown="if(event.key==='Enter')addWord()">
+      <input class="inp" id="inpKo" placeholder="한글 뜻" onkeydown="if(event.key==='Enter')addWord()">
+      <button class="ba" id="addBtn" onclick="addWord()">추가</button>
+      <button class="bce" id="cancelEB" onclick="cancelEdit()">취소</button>
+    </div>
+  </div>
+
+  <div class="wlh">
+    <div class="sl" id="wLbl">등록된 단어 (0개)</div>
+    <button class="br" id="resetBtn" onclick="openReset()">🗑️ 초기화</button>
+  </div>
+  <div id="wordList"></div>
+  <div id="startWrap" style="text-align:center;margin-top:20px;display:none">
+    <button class="bn" onclick="toTab('quiz')">🎯 퀴즈 시작하기!</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mbg" id="resetModal">
+  <div class="modal">
+    <div class="mtt">🗑️ 단어장 초기화</div>
+    <div class="mds">등록된 단어가 모두 삭제돼요.<br>정말 초기화할까요?</div>
+    <div class="mbs">
+      <button class="mb c" onclick="closeReset()">취소</button>
+      <button class="mb d" onclick="doReset()">초기화</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let words=[
+  {en:'apple',ko:'사과'},{en:'banana',ko:'바나나'},
+  {en:'elephant',ko:'코끼리'},{en:'butterfly',ko:'나비'},
+  {en:'mountain',ko:'산'},{en:'ocean',ko:'바다'},
+  {en:'rainbow',ko:'무지개'},{en:'library',ko:'도서관'},
+];
+let editIdx=null,extW=null;
+let order=[],qIdx=0,curQ=null,answered=false;
+let score={c:0,t:0},streak=0;
+
+function toTab(t){
+  document.getElementById('tq').style.display=t==='quiz'?'block':'none';
+  document.getElementById('te').style.display=t==='edit'?'block':'none';
+  document.querySelectorAll('.tbtn').forEach((b,i)=>{b.className='tbtn '+((t==='quiz'&&i===0)||(t==='edit'&&i===1)?'on':'off');});
+  if(t==='quiz')initQuiz(); renderWords();
+}
+
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+
+function initQuiz(){
+  if(words.length<4){document.getElementById('qem').style.display='block';document.getElementById('qmain').style.display='none';return;}
+  document.getElementById('qem').style.display='none';document.getElementById('qmain').style.display='block';
+  order=shuffle(words.map((_,i)=>i));qIdx=0;score={c:0,t:0};streak=0;updScore();showQ();
+}
+function restartQuiz(){initQuiz();}
+
+function makeQ(){
+  const w=words[order[qIdx%order.length]];
+  const mode=Math.random()>.5?'en→ko':'ko→en';
+  const q=mode==='en→ko'?w.en:w.ko,ans=mode==='en→ko'?w.ko:w.en;
+  const pool=words.filter(x=>mode==='en→ko'?x.ko!==ans:x.en!==ans);
+  const dist=shuffle(pool).slice(0,3).map(x=>mode==='en→ko'?x.ko:x.en);
+  return{mode,q,ans,choices:shuffle([ans,...dist])};
+}
+
+function showQ(){
+  answered=false;curQ=makeQ();
+  document.getElementById('fb').style.display='none';
+  const mt=document.getElementById('mTag');
+  mt.textContent=curQ.mode==='en→ko'?'🇺🇸 영어 → 한글':'🇰🇷 한글 → 영어';
+  mt.className='mtag '+(curQ.mode==='en→ko'?'en':'ko');
+  document.getElementById('qWord').textContent=curQ.q;
+  const wrap=document.getElementById('choices');wrap.innerHTML='';
+  ['A','B','C','D'].forEach((L,i)=>{
+    const btn=document.createElement('button');
+    btn.className='cbtn';
+    btn.innerHTML=`<span class="lb">${L}</span><span>${curQ.choices[i]}</span>`;
+    btn.onclick=()=>pick(curQ.choices[i],btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function pick(choice,btn){
+  if(answered)return;answered=true;
+  const ok=choice===curQ.ans;
+  score.t++;if(ok){score.c++;streak++;doBounce();}else{streak=0;doShake();}
+  updScore();
+  document.querySelectorAll('.cbtn').forEach(b=>{
+    b.disabled=true;
+    const lbl=b.querySelector('span:last-child').textContent,badge=b.querySelector('.lb');
+    if(lbl===curQ.ans){b.classList.add('ok');badge.style.cssText='background:#10b981;color:white';}
+    else if(b===btn){b.classList.add('ng');badge.style.cssText='background:#ef4444;color:white';}
+    else{b.classList.add('rev');badge.style.cssText='background:#e5e7eb;color:#999';}
+  });
+  document.getElementById('fbTxt').textContent=ok?'🎉 정답이에요!':`😅 틀렸어요! 정답: "${curQ.ans}"`;
+  document.getElementById('fb').style.display='block';
+}
+function nextQ(){qIdx++;showQ();}
+function updScore(){
+  const acc=score.t>0?Math.round(score.c/score.t*100):0;
+  document.getElementById('pCnt').textContent=`✅ ${score.c}/${score.t}`;
+  document.getElementById('pAcc').textContent=`🎯 ${acc}%`;
+  const fb=document.getElementById('fireB');
+  if(streak>=3){fb.style.display='flex';fb.textContent=`🔥 ${streak}연속!`;}else fb.style.display='none';
+}
+function doShake(){const c=document.getElementById('qCard');c.classList.remove('as');void c.offsetWidth;c.classList.add('as');setTimeout(()=>c.classList.remove('as'),500);}
+function doBounce(){const c=document.getElementById('qCard');c.classList.remove('ab');void c.offsetWidth;c.classList.add('ab');setTimeout(()=>c.classList.remove('ab'),500);}
+
+function renderWords(){
+  document.getElementById('hSub').textContent=`${words.length}개 단어`;
+  document.getElementById('wLbl').textContent=`등록된 단어 (${words.length}개)`;
+  document.getElementById('resetBtn').style.display=words.length>0?'flex':'none';
+  document.getElementById('startWrap').style.display=words.length>=4?'block':'none';
+  const list=document.getElementById('wordList');list.innerHTML='';
+  words.forEach((w,i)=>{
+    const row=document.createElement('div');
+    row.className='wr'+(editIdx===i?' ed':'');
+    row.innerHTML=`<span style="flex:1;font-weight:800;color:#1e1b4b;font-size:14px">${w.en}</span><span style="color:#ccc;font-size:12px">→</span><span style="flex:1;font-weight:700;color:#555;font-size:14px">${w.ko}</span><button class="ib" onclick="startEdit(${i})">✏️</button><button class="ib" onclick="delWord(${i})">🗑️</button>`;
+    list.appendChild(row);
+  });
+}
+
+function addWord(){
+  const e=document.getElementById('inpEn').value.trim().toLowerCase(),k=document.getElementById('inpKo').value.trim();
+  if(!e||!k)return;
+  if(editIdx!==null){words[editIdx]={en:e,ko:k};editIdx=null;document.getElementById('inpTit').textContent='➕ 직접 추가';document.getElementById('addBtn').textContent='추가';document.getElementById('cancelEB').style.display='none';}
+  else words.push({en:e,ko:k});
+  document.getElementById('inpEn').value='';document.getElementById('inpKo').value='';
+  renderWords();
+}
+function delWord(i){words.splice(i,1);if(editIdx===i)cancelEdit();else if(editIdx>i)editIdx--;renderWords();}
+function startEdit(i){editIdx=i;document.getElementById('inpEn').value=words[i].en;document.getElementById('inpKo').value=words[i].ko;document.getElementById('inpTit').textContent='✏️ 수정';document.getElementById('addBtn').textContent='저장';document.getElementById('cancelEB').style.display='inline-block';renderWords();}
+function cancelEdit(){editIdx=null;document.getElementById('inpEn').value='';document.getElementById('inpKo').value='';document.getElementById('inpTit').textContent='➕ 직접 추가';document.getElementById('addBtn').textContent='추가';document.getElementById('cancelEB').style.display='none';renderWords();}
+
+function openReset(){document.getElementById('resetModal').classList.add('show');}
+function closeReset(){document.getElementById('resetModal').classList.remove('show');}
+function doReset(){words=[];editIdx=null;closeReset();renderWords();}
+
+function setLoading(on){document.getElementById('ov').className='ov'+(on?' show':'');document.getElementById('fi').disabled=on;}
+function showErr(m){const el=document.getElementById('photoErr');el.textContent='⚠️ '+m;el.style.display='block';}
+function hideErr(){document.getElementById('photoErr').style.display='none';}
+
+async function handleFile(file){
+  if(!file||!file.type.startsWith('image/'))return;
+  hideErr();cancelExt();setLoading(true);
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    const dataUrl=ev.target.result;
+    try{
+      const result=await callClaude(dataUrl.split(',')[1],file.type||'image/jpeg');
+      if(!result||result.length===0){showErr('단어를 찾지 못했어요. 글씨가 잘 보이는 사진으로 다시 해보세요.');}
+      else{extW=result;showExt(dataUrl,result);}
+    }catch(err){showErr('오류: '+err.message);}
+    finally{setLoading(false);document.getElementById('fi').value='';}
+  };
+  reader.readAsDataURL(file);
+}
+
+async function callClaude(b64,mime){
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:1000,
+      messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:mime,data:b64}},
+        {type:'text',text:'이 이미지에서 영어 단어와 한국어 뜻 쌍을 모두 추출해주세요.\n반드시 아래 JSON 배열만 반환하세요 (다른 텍스트 없이):\n[{"en":"word","ko":"뜻"}]\n- 영어는 소문자, 한국어 뜻만, 없으면 []'}
+      ]}]
+    })
+  });
+  const data=await res.json();
+  const txt=(data.content||[]).find(b=>b.type==='text')?.text||'[]';
+  return JSON.parse(txt.replace(/```json|```/g,'').trim());
+}
+
+function showExt(dataUrl,result){
+  document.getElementById('prevImg').src=dataUrl;
+  document.getElementById('extCnt').textContent=`✨ ${result.length}개 단어를 찾았어요!`;
+  document.getElementById('extList').innerHTML=result.map(w=>`<div class="er"><span style="flex:1;font-weight:800;color:#1e1b4b">${w.en}</span><span style="color:#ccc;font-size:12px">→</span><span style="flex:1;font-weight:700;color:#555">${w.ko}</span></div>`).join('');
+  document.getElementById('extPanel').style.display='block';
+}
+function confirmExt(replace){
+  if(!extW)return;
+  if(replace){words=[...extW];}
+  else{const ex=new Set(words.map(w=>w.en));extW.filter(w=>!ex.has(w.en)).forEach(w=>words.push(w));}
+  extW=null;document.getElementById('extPanel').style.display='none';document.getElementById('prevImg').src='';
+  renderWords();
+}
+function cancelExt(){extW=null;document.getElementById('extPanel').style.display='none';document.getElementById('prevImg').src='';}
+
+document.addEventListener('paste',e=>{
+  for(const item of e.clipboardData?.items||[]){
+    if(item.type.startsWith('image/')){e.preventDefault();toTab('edit');handleFile(item.getAsFile());break;}
+  }
+});
+
+renderWords();initQuiz();
+</script>
+</body>
+</html>
