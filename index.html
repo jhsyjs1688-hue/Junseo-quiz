@@ -267,7 +267,9 @@ fix the washrooms | 화장실들을 수리하다"></textarea>
 </div>
 
 <script>
-let words=[], editIdx=null, parsedWords=null;
+let words=JSON.parse(localStorage.getItem('junseo-words')||'[]');
+let editIdx=null, parsedWords=null;
+function saveWords(){localStorage.setItem('junseo-words',JSON.stringify(words));}
 let order=[], qIdx=0, curQ=null, answered=false;
 let score={c:0,t:0}, streak=0;
 let quizMode='obj'; // 'obj' | 'write'
@@ -473,14 +475,14 @@ function addWord(){
   if(editIdx!==null){words[editIdx]={en:e,ko:k};editIdx=null;document.getElementById('inpTit').textContent='➕ 직접 추가';document.getElementById('addBtn').textContent='추가';document.getElementById('cancelEB').style.display='none';}
   else words.push({en:e,ko:k});
   document.getElementById('inpEn').value='';document.getElementById('inpKo').value='';
-  renderWords();
+  saveWords(); renderWords();
 }
-function delWord(i){words.splice(i,1);if(editIdx===i)cancelEdit();else if(editIdx>i)editIdx--;renderWords();}
+function delWord(i){words.splice(i,1);if(editIdx===i)cancelEdit();else if(editIdx>i)editIdx--;saveWords();renderWords();}
 function startEdit(i){editIdx=i;document.getElementById('inpEn').value=words[i].en;document.getElementById('inpKo').value=words[i].ko;document.getElementById('inpTit').textContent='✏️ 수정';document.getElementById('addBtn').textContent='저장';document.getElementById('cancelEB').style.display='inline-block';renderWords();}
 function cancelEdit(){editIdx=null;document.getElementById('inpEn').value='';document.getElementById('inpKo').value='';document.getElementById('inpTit').textContent='➕ 직접 추가';document.getElementById('addBtn').textContent='추가';document.getElementById('cancelEB').style.display='none';renderWords();}
 function openReset(){document.getElementById('resetModal').classList.add('show');}
 function closeReset(){document.getElementById('resetModal').classList.remove('show');}
-function doReset(){words=[];editIdx=null;closeReset();renderWords();}
+function doReset(){words=[];editIdx=null;saveWords();closeReset();renderWords();}
 
 // ── BULK PASTE ──
 function parsePaste(){
@@ -511,7 +513,7 @@ function confirmPaste(replace){
   parsedWords=null;
   document.getElementById('parsePreview').style.display='none';
   document.getElementById('pasteArea').value='';
-  renderWords();
+  saveWords(); renderWords();
 }
 function cancelPaste(){parsedWords=null;document.getElementById('parsePreview').style.display='none';}
 
